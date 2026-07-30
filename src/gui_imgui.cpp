@@ -3018,12 +3018,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                 if (g_resizableWindow) {
                     dl->AddCircleFilled(ImVec2(maxX, btnY), btnR, IM_COL32(80, 200, 120, 255));
                     if (g_isMaximized) {
+                        float s = 4.0f;
+                        float off = 2.5f;
                         ImU32 iconCol = IM_COL32(4, 4, 5, 255);
-                        float s = 3.0f;
-                        dl->AddRectFilled(ImVec2(maxX - s + 1.5f, btnY - s + 2.5f), ImVec2(maxX + s + 1.5f, btnY + s + 2.5f), IM_COL32(80, 200, 120, 255));
-                        dl->AddRect(ImVec2(maxX - s + 1.5f, btnY - s + 2.5f), ImVec2(maxX + s + 1.5f, btnY + s + 2.5f), iconCol, 0.0f, 0, 1.0f);
-                        dl->AddRectFilled(ImVec2(maxX - s - 0.5f, btnY - s - 0.5f), ImVec2(maxX + s - 0.5f, btnY + s - 0.5f), IM_COL32(80, 200, 120, 255));
-                        dl->AddRect(ImVec2(maxX - s - 0.5f, btnY - s - 0.5f), ImVec2(maxX + s - 0.5f, btnY + s - 0.5f), iconCol, 0.0f, 0, 1.0f);
+                        // back square (top-right)
+                        dl->AddRect(ImVec2(maxX - s + off, btnY - s - off + 1.0f), ImVec2(maxX + s + off, btnY + s - off + 1.0f), iconCol, 0.5f, 0, 1.2f);
+                        // front square (bottom-left)
+                        dl->AddRect(ImVec2(maxX - s - off, btnY - s + off + 1.0f), ImVec2(maxX + s - off, btnY + s + off + 1.0f), iconCol, 0.5f, 0, 1.2f);
                     }
                 }
 
@@ -4454,12 +4455,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
                                 ImGuiWindowFlags_AlwaysAutoResize);
+                            ImGui::TextDisabled("Columns");
+                            ImGui::Separator();
                             for (int ci = 0; ci < 11; ci++) {
-                                if (ci == 0) ImGui::TextDisabled("Columns");
-                                if (ci == 0) ImGui::Separator();
                                 if (ImGui::Checkbox(g_colNames[ci], &g_colVisible[ci])) {
                                     g_filteredIndicesDirty = true;
                                 }
+                            }
+                            ImGui::Separator();
+                            if (ImGui::SmallButton("Reset All")) {
+                                for (int ci = 0; ci < 11; ci++) g_colVisible[ci] = true;
+                                g_filteredIndicesDirty = true;
                             }
                             ImGui::End();
                         }
@@ -6816,22 +6822,32 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                     bool isHov = io.MousePos.x >= dockLeft && io.MousePos.x <= dockLeft + dockW &&
                                  io.MousePos.y >= btnTop && io.MousePos.y <= btnBot;
 
-                    ImU32 bg = isActive ? IM_COL32(142, 132, 255, 25)
-                               : isHov ? IM_COL32(255, 255, 255, 8)
-                               : IM_COL32(0, 0, 0, 0);
+                    ImU32 bg = isActive ? IM_COL32(
+                        (int)(g_sidebarGlowColor[0] * 255),
+                        (int)(g_sidebarGlowColor[1] * 255),
+                        (int)(g_sidebarGlowColor[2] * 255), 25)
+                        : isHov ? IM_COL32(255, 255, 255, 8)
+                        : IM_COL32(0, 0, 0, 0);
                     ddl->AddRectFilled(ImVec2(dockLeft, btnTop), ImVec2(dockLeft + dockW, btnBot), bg, 0.0f);
 
-                    ImU32 lineCol = isActive ? IM_COL32(142, 132, 255, 255) : IM_COL32(0, 0, 0, 0);
+                    ImU32 lineCol = isActive ? IM_COL32(
+                        (int)(g_sidebarGlowColor[0] * 255),
+                        (int)(g_sidebarGlowColor[1] * 255),
+                        (int)(g_sidebarGlowColor[2] * 255), 255)
+                        : IM_COL32(0, 0, 0, 0);
                     float lineW = 2.5f;
                     float lineX = dockLeft;
                     float lineTop = btnTop + 8.0f;
                     float lineBot = btnBot - 8.0f;
 
                     if (isActive && g_sidebarGlowEnabled) {
+                        int glowR = (int)(g_sidebarGlowColor[0] * 255);
+                        int glowG = (int)(g_sidebarGlowColor[1] * 255);
+                        int glowB = (int)(g_sidebarGlowColor[2] * 255);
                         int glowA = (int)(dockPulse * 60);
                         for (int g = 3; g >= 1; g--) {
                             float spread = (float)g * 1.5f;
-                            ImU32 glowCol = IM_COL32(142, 132, 255, glowA / (g + 1));
+                            ImU32 glowCol = IM_COL32(glowR, glowG, glowB, glowA / (g + 1));
                             ddl->AddRectFilled(ImVec2(lineX - spread, lineTop), ImVec2(lineX + lineW + spread, lineBot), glowCol, 1.0f);
                         }
                     }
@@ -6839,45 +6855,110 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
 
                     float iconCX = dockLeft + dockW / 2.0f;
                     float iconCY = btnTop + btnH / 2.0f;
-                    float s = 7.0f;
-                    float lw = 1.5f;
+                    float s = 9.5f;
+                    float lw = 1.8f;
                     ImU32 iconCol = isActive ? IM_COL32(142, 132, 255, 255)
                                    : isHov ? IM_COL32(200, 200, 210, 255)
                                    : IM_COL32(110, 110, 125, 255);
 
                     if (i == 0) {
-                        ddl->AddRect(ImVec2(iconCX - s * 0.55f, iconCY - s * 0.75f), ImVec2(iconCX + s * 0.55f, iconCY + s * 0.75f), iconCol, 1.5f, 0, lw);
-                        ddl->AddLine(ImVec2(iconCX - s * 0.25f, iconCY - s * 0.28f), ImVec2(iconCX + s * 0.25f, iconCY - s * 0.28f), iconCol, lw);
-                        ddl->AddLine(ImVec2(iconCX - s * 0.25f, iconCY + s * 0.0f), ImVec2(iconCX + s * 0.25f, iconCY + s * 0.0f), iconCol, lw);
-                        ddl->AddLine(ImVec2(iconCX - s * 0.25f, iconCY + s * 0.28f), ImVec2(iconCX + s * 0.1f, iconCY + s * 0.28f), iconCol, lw);
+                        // Uninstall: shield with arrow pointing up-out
+                        float sw = s * 0.7f, sh = s * 0.9f;
+                        ImVec2 pts[5] = {
+                            ImVec2(iconCX, iconCY - sh),
+                            ImVec2(iconCX + sw, iconCY - sh * 0.5f),
+                            ImVec2(iconCX + sw * 0.8f, iconCY + sh * 0.7f),
+                            ImVec2(iconCX, iconCY + sh),
+                            ImVec2(iconCX - sw * 0.8f, iconCY + sh * 0.7f),
+                        };
+                        ddl->AddPolyline(pts, 5, iconCol, ImDrawFlags_Closed, lw);
+                        // arrow pointing up inside shield
+                        float aw = s * 0.25f, ah = s * 0.4f;
+                        float ay = iconCY + s * 0.1f;
+                        ddl->AddLine(ImVec2(iconCX, ay - ah), ImVec2(iconCX, ay + ah * 0.5f), iconCol, lw);
+                        ddl->AddLine(ImVec2(iconCX, ay - ah), ImVec2(iconCX - aw, ay - ah * 0.2f), iconCol, lw);
+                        ddl->AddLine(ImVec2(iconCX, ay - ah), ImVec2(iconCX + aw, ay - ah * 0.2f), iconCol, lw);
+                        // horizontal line at arrow base
+                        ddl->AddLine(ImVec2(iconCX - aw * 0.8f, ay + ah * 0.5f), ImVec2(iconCX + aw * 0.8f, ay + ah * 0.5f), iconCol, lw);
                     } else if (i == 1) {
-                        float lidY = iconCY - s * 0.5f;
-                        ddl->AddLine(ImVec2(iconCX - s * 0.1f, lidY - s * 0.1f), ImVec2(iconCX + s * 0.1f, lidY - s * 0.1f), iconCol, lw);
-                        ddl->AddRectFilled(ImVec2(iconCX - s * 0.45f, lidY), ImVec2(iconCX + s * 0.45f, lidY + s * 0.18f), iconCol, 1.0f);
-                        float bTop = lidY + s * 0.22f;
+                        // Delete: trash can - lid with handle, body, bottom line
+                        float lidW = s * 0.7f, lidH = s * 0.14f;
+                        float lidY = iconCY - s * 0.55f;
+                        // lid top surface
+                        ddl->AddLine(ImVec2(iconCX - lidW * 0.5f, lidY), ImVec2(iconCX + lidW * 0.5f, lidY), iconCol, lw);
+                        // lid rim
+                        ddl->AddLine(ImVec2(iconCX - lidW * 0.45f, lidY + lidH), ImVec2(iconCX + lidW * 0.45f, lidY + lidH), iconCol, lw);
+                        // handle on lid
+                        float hw = s * 0.2f;
+                        ddl->AddLine(ImVec2(iconCX - hw, lidY - s * 0.12f), ImVec2(iconCX + hw, lidY - s * 0.12f), iconCol, lw);
+                        ddl->AddLine(ImVec2(iconCX - hw, lidY - s * 0.12f), ImVec2(iconCX - hw, lidY), iconCol, lw);
+                        ddl->AddLine(ImVec2(iconCX + hw, lidY - s * 0.12f), ImVec2(iconCX + hw, lidY), iconCol, lw);
+                        // body - tapered trapezoid
+                        float bTop = lidY + lidH + s * 0.08f;
                         float bBot = iconCY + s * 0.65f;
-                        ddl->AddLine(ImVec2(iconCX - s * 0.38f, bTop), ImVec2(iconCX - s * 0.22f, bBot), iconCol, lw);
-                        ddl->AddLine(ImVec2(iconCX + s * 0.38f, bTop), ImVec2(iconCX + s * 0.22f, bBot), iconCol, lw);
-                        ddl->AddLine(ImVec2(iconCX - s * 0.22f, bBot), ImVec2(iconCX + s * 0.22f, bBot), iconCol, lw);
+                        float bTopW = s * 0.4f, bBotW = s * 0.32f;
+                        ddl->AddLine(ImVec2(iconCX - bTopW, bTop), ImVec2(iconCX - bBotW, bBot), iconCol, lw);
+                        ddl->AddLine(ImVec2(iconCX + bTopW, bTop), ImVec2(iconCX + bBotW, bBot), iconCol, lw);
+                        // bottom line
+                        ddl->AddLine(ImVec2(iconCX - bBotW, bBot), ImVec2(iconCX + bBotW, bBot), iconCol, lw);
+                        // two vertical ribs on body
+                        float ribX = s * 0.15f;
+                        ddl->AddLine(ImVec2(iconCX - ribX, bTop + s * 0.12f), ImVec2(iconCX - ribX * 0.8f, bBot - s * 0.1f), iconCol, lw * 0.8f);
+                        ddl->AddLine(ImVec2(iconCX + ribX, bTop + s * 0.12f), ImVec2(iconCX + ribX * 0.8f, bBot - s * 0.1f), iconCol, lw * 0.8f);
                     } else if (i == 2) {
-                        float r = s * 0.48f;
-                        ddl->AddLine(ImVec2(iconCX - r, iconCY - r), ImVec2(iconCX + r, iconCY + r), iconCol, lw + 0.3f);
-                        ddl->AddLine(ImVec2(iconCX + r, iconCY - r), ImVec2(iconCX - r, iconCY + r), iconCol, lw + 0.3f);
+                        // Logs: open book / document
+                        float bw = s * 0.55f, bh = s * 0.75f;
+                        float top = iconCY - bh * 0.5f, bot = iconCY + bh * 0.5f;
+                        // left page
+                        ddl->AddRect(ImVec2(iconCX - bw, top), ImVec2(iconCX - s * 0.04f, bot), iconCol, 1.5f, 0, lw);
+                        // right page
+                        ddl->AddRect(ImVec2(iconCX + s * 0.04f, top), ImVec2(iconCX + bw, bot), iconCol, 1.5f, 0, lw);
+                        // spine line
+                        ddl->AddLine(ImVec2(iconCX, top - s * 0.05f), ImVec2(iconCX, bot + s * 0.05f), iconCol, lw);
+                        // text lines on left page
+                        float lineStart = top + s * 0.18f;
+                        float lineGap = s * 0.16f;
+                        for (int li = 0; li < 3; li++) {
+                            float ly = lineStart + li * lineGap;
+                            float lwid = (li == 2) ? s * 0.2f : s * 0.35f;
+                            ddl->AddLine(ImVec2(iconCX - bw + s * 0.08f, ly), ImVec2(iconCX - bw + s * 0.08f + lwid, ly), iconCol, lw * 0.7f);
+                        }
+                        // text lines on right page
+                        for (int li = 0; li < 3; li++) {
+                            float ly = lineStart + li * lineGap;
+                            float lwid = (li == 2) ? s * 0.25f : s * 0.35f;
+                            ddl->AddLine(ImVec2(iconCX + s * 0.12f, ly), ImVec2(iconCX + s * 0.12f + lwid, ly), iconCol, lw * 0.7f);
+                        }
                     } else if (i == 3) {
-                        float outerR = s * 0.55f;
-                        float innerR = s * 0.32f;
+                        // Settings: gear with proper teeth
+                        float outerR = s * 0.6f;
+                        float innerR = s * 0.38f;
+                        float hubR = s * 0.18f;
                         int teeth = 8;
+                        float toothW = 0.22f;
                         for (int t = 0; t < teeth; t++) {
                             float a1 = (float)t / teeth * 6.2832f - 1.5708f;
-                            float a2 = (float)(t + 0.5f) / teeth * 6.2832f - 1.5708f;
-                            ddl->AddLine(ImVec2(iconCX + cosf(a1) * innerR, iconCY + sinf(a1) * innerR),
-                                         ImVec2(iconCX + cosf(a1) * outerR, iconCY + sinf(a1) * outerR), iconCol, lw);
-                            ddl->AddLine(ImVec2(iconCX + cosf(a1) * outerR, iconCY + sinf(a1) * outerR),
-                                         ImVec2(iconCX + cosf(a2) * outerR, iconCY + sinf(a2) * outerR), iconCol, lw);
-                            ddl->AddLine(ImVec2(iconCX + cosf(a2) * outerR, iconCY + sinf(a2) * outerR),
-                                         ImVec2(iconCX + cosf(a2) * innerR, iconCY + sinf(a2) * innerR), iconCol, lw);
+                            float a2 = (float)(t + toothW) / teeth * 6.2832f - 1.5708f;
+                            float a3 = (float)(t + 0.5f - toothW) / teeth * 6.2832f - 1.5708f;
+                            float a4 = (float)(t + 0.5f) / teeth * 6.2832f - 1.5708f;
+                            // outer tooth
+                            ImVec2 o1(iconCX + cosf(a1) * innerR, iconCY + sinf(a1) * innerR);
+                            ImVec2 o2(iconCX + cosf(a1) * outerR, iconCY + sinf(a1) * outerR);
+                            ImVec2 o3(iconCX + cosf(a2) * outerR, iconCY + sinf(a2) * outerR);
+                            ImVec2 o4(iconCX + cosf(a2) * innerR, iconCY + sinf(a2) * innerR);
+                            ddl->AddLine(o1, o2, iconCol, lw);
+                            ddl->AddLine(o2, o3, iconCol, lw);
+                            ddl->AddLine(o3, o4, iconCol, lw);
+                            // inner valley
+                            ImVec2 iv1(iconCX + cosf(a3) * innerR, iconCY + sinf(a3) * innerR);
+                            ImVec2 iv2(iconCX + cosf(a4) * innerR, iconCY + sinf(a4) * innerR);
+                            ddl->AddLine(o4, iv1, iconCol, lw);
+                            ddl->AddLine(iv1, iv2, iconCol, lw);
+                            ddl->AddLine(iv2, ImVec2(iconCX + cosf(a4 + (0.5f - toothW * 2.0f) / teeth * 6.2832f) * innerR, iconCY + sinf(a4 + (0.5f - toothW * 2.0f) / teeth * 6.2832f) * innerR), iconCol, lw);
                         }
-                        ddl->AddCircleFilled(ImVec2(iconCX, iconCY), s * 0.14f, dockBg, 8);
+                        // center hub
+                        ddl->AddCircle(ImVec2(iconCX, iconCY), hubR, iconCol, 12, lw);
+                        ddl->AddCircleFilled(ImVec2(iconCX, iconCY), hubR * 0.35f, dockBg, 8);
                     }
 
                     if (isHov && !isActive) {
