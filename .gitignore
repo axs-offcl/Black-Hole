@@ -1,0 +1,46 @@
+# Build output
+build/
+
+# Personal / reference folders
+19/
+tool_test/
+Bulk-Crap-Uninstaller-6.2/
+imgui/
+
+# Personal docs
+AI Protocol.md
+MILESTONE_1_PLAN.md
+PROJECT_MAP.md
+REGISTRY_INTEGRATION.md
+integration_test_report.md
+TEST_REPORT.md
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Compiled objects
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.exe
+!build/bin/Release/BlackHole.exe

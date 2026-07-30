@@ -1,386 +1,133 @@
-<div align="center">
+# Black Hole (B-H)
 
-# 🕳️ Black Hole (B-H)
+> Windows system utility that safely removes stubborn, locked, and leftover files using the Windows reboot-pending queue.
 
-### Secure File Deletion Utility for Windows
-
-**Delete stubborn, locked, and protected files safely — with military-grade system protection.**
-
-[![GitHub Release](https://img.shields.io/github/v/release/axs-offcl/Black-Hole?style=for-the-badge&color=e884ff)](https://github.com/axs-offcl/Black-Hole/releases)
-[![License](https://img.shields.io/github/license/axs-offcl/Black-Hole?style=for-the-badge&color=8e84ff)](https://github.com/axs-offcl/Black-Hole/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-00c853?style=for-the-badge)](#)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4?style=for-the-badge)](https://www.microsoft.com/windows)
-[![C++](https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-101%2F101%20passing-00c853?style=for-the-badge)](#)
-
-<br>
-
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [How It Works](#-how-it-works) • [Building](#-building-from-source) • [CLI](#-command-line-interface) • [Testing](#-testing) • [License](#-license)
-
-<br>
-
-</div>
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square" alt="Platform">
+  <img src="https://img.shields.io/badge/language-C%2B%2B17-00599C?style=flat-square&logo=cplusplus" alt="C++17">
+  <img src="https://img.shields.io/badge/license-GPL--3.0-green?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/tests-119%20passing-brightgreen?style=flat-square" alt="Tests">
+</p>
 
 ---
 
-## 📋 Overview
+## What it does
 
-Black Hole (B-H) is a Windows system utility that safely deletes stubborn, locked, and protected files using a 7-stage deletion cascade. Built with native Win32 API and Dear ImGui, it provides both a modern GUI dashboard and full CLI support for scripting and automation.
+Black Hole safely deletes files that normal methods can't touch — locked executables, active DLLs, protected registry keys, and orphaned leftovers from uninstalled programs. It uses the Windows `MoveFileExW` reboot-queue mechanism to schedule deletion at the next reboot, when file locks are released.
 
-> ⚠️ **This tool performs permanent file deletion.** Always verify file paths before confirming deletion. The blacklist protection system prevents accidental deletion of critical Windows system files.
+## Features
 
----
+### Uninstaller Page
+- **Full program inventory** — enumerates all installed programs from 3 registry hives (HKLM x86/64, HKCU)
+- **Multi-select uninstall** — select multiple programs and batch-uninstall them
+- **Force Remove** — kills locking processes and queues stubborn files for reboot deletion
+- **Certificate verification** — shows WARN for unsigned or suspicious executables
+- **PE metadata extraction** — reads version, publisher, and bitness from EXE headers
+- **Icon caching** — loads program icons from disk cache for instant display
+- **Sortable columns** — Program Name, Publisher, Size, Installed Date, Cert, Location, Bitness, Protected, System
 
-## 🚀 Features
+### Leftovers Scanner
+- **Multi-depth scan** — Moderate (registry only) or Advanced (registry + services + COM + firewall + scheduled tasks + orphaned installers)
+- **Confidence scoring** — each leftover rated Safe / Maybe / Risky with color-coded display
+- **Directory orphan detection** — finds install folders left behind after uninstall
+- **Cleanable categories** — files, directories, and registry keys can be individually reviewed before purge
 
-<table>
-<tr>
-<td>
+### Other Features
+- **Drag-and-drop** — drop files directly onto the window to force-delete them
+- **Context menu integration** — right-click any file in Explorer to analyze or force-delete
+- **System Restore Point** — optionally creates a restore point before purging leftovers
+- **Audit logging** — every deletion is logged with timestamp, result, and file path
+- **Crash handler** — writes crash logs to `%TEMP%\BlackHole_crash.log`
+- **Blacklist protection** — critical system files (ntoskrnl, hal, bootmgr, svchost, etc.) are always blocked
+- **Override mode** — type `"I assume full liability"` to bypass the blacklist (resets on restart)
 
-**Core Deletion Engine**
-- 🔒 7-stage deletion cascade
-- 🛡️ Blacklist protection (26+ system files)
-- ♻️ Recycle Bin integration with restore
-- 📅 Reboot-queue via `MoveFileExW`
+## Screenshots
 
-</td>
-<td>
+<p align="center">
+  <em>Uninstaller page with certificate warnings and column filters</em>
+</p>
 
-**Uninstaller Module**
-- 🔍 21 left-over scanners (BCU-derived)
-- 📊 Confidence scoring engine (10 factors)
-- 🏪 Store App (UWP/AppX) discovery
-- 🔗 Cross-hive registry merge
+## Building
 
-</td>
-</tr>
-<tr>
-<td>
+### Requirements
+- **Windows 10/11** (x64)
+- **Visual Studio 2022** with C++ Desktop workload
+- **CMake 3.20+**
 
-**Security & Safety**
-- 🔐 `I assume full liability` override phrase
-- 🛡️ Device path & reserved name shield
-- 🔑 Path canonicalization & ADS stripping
-- 📝 Forensic audit logging
+### Build
 
-</td>
-<td>
-
-**GUI & UX**
-- 🌙 Dark/Light theme toggle
-- 🎨 Muca-style Dear ImGui + DX11
-- 📂 Dock navigation `[L] [D] [U] [S]`
-- 🖱️ Windows Explorer context menu
-
-</td>
-</tr>
-</table>
-
----
-
-## 💾 Installation
-
-### Pre-built Binaries
-
-1. Download the latest release from [GitHub Releases](https://github.com/axs-offcl/Black-Hole/releases)
-2. Extract `BlackHole.exe` and `BlackHoleCLI.exe` to any folder
-3. Run `BlackHole.exe` as Administrator
-
-### Build from Source
-
-```cmd
-git clone https://github.com/axs-offcl/Black-Hole.git
-cd Black-Hole
-mkdir build && cd build
-cmake .. -G "Visual Studio 17 2022" -A x64
-cmake --build . --config Release
+```bash
+cmake -B build -G "Visual Studio 17 2022" -A x64
+cmake --build build --config Release
 ```
 
----
+The output is a single self-contained executable at `build/bin/Release/BlackHole.exe` (~1.3 MB).
 
-## 🖥️ Usage
+### Run Tests
 
-### GUI Dashboard
-
-| Tab | Key | Description |
-|-----|-----|-------------|
-| **Logs** | `[L]` | View deletion history, restore from Recycle Bin |
-| **Delete** | `[D]` | Select files, configure deletion mode |
-| **Uninstaller** | `[U]` | Scan installed programs, force-remove leftovers |
-| **Settings** | `[S]` | Theme, context menu, sidebar glow, safe mode |
-
-### Override Mode
-
-Override mode disables blacklist protection. Must be re-activated each session.
-
-1. Open **Settings** tab
-2. Toggle **SAFE** switch to ON
-3. Type exactly: `I assume full liability`
-4. Blacklist is now disabled (resets on restart)
-
-### Recycle Bin Mode
-
-1. Open **Settings** → Toggle **Send to Recycle Bin** ON
-2. Deleted files go to Windows Recycle Bin
-3. Click **Restore** in Logs tab to recover items
-
-### Uninstaller
-
-1. Open **Uninstaller** tab `[U]`
-2. Browse/search installed programs with icons, publisher, size
-3. **Uninstall** — runs standard uninstaller
-4. **Force Remove** — scans for leftovers (registry, filesystem, COM, services)
-5. Leftover popup shows confidence-scored items in Safe/Maybe/Risky groups
-
----
-
-## ⚙️ How It Works
-
-```
-Input Path
-    │
-    ▼
-┌─────────────────┐
-│ Blacklist Check  │ ──► BLOCKED (ntoskrnl.exe, lsass.exe, etc.)
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ Privilege Elev.  │ ──► SE_BACKUP_NAME + SE_RESTORE_NAME
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ Reparse Point   │ ──► Detect symlinks/junctions, delete link only
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ Handle-Based    │ ──► SetFileInformationByHandle (atomic delete)
-│ Deletion        │
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ ADS Detection   │ ──► Detect & delete alternate data streams
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ Process Kill    │ ──► Restart Manager API finds locking processes
-└────────┬────────┘
-         │
-    ▼
-┌─────────────────┐
-│ Reboot Queue    │ ──► MoveFileExW MOVEFILE_DELAY_UNTIL_REBOOT
-└─────────────────┘
+```bash
+build/tests/Release/BlackHoleTests.exe
 ```
 
----
-
-## 🛠️ Building from Source
-
-### Prerequisites
-
-| Tool | Version |
-|------|---------|
-| **Visual Studio** | 2022 BuildTools (MSVC 19.44+) |
-| **CMake** | 3.15+ |
-| **Windows SDK** | 10.0.26100.0+ |
-
-### Build Commands
-
-```cmd
-:: Clone and build
-git clone https://github.com/axs-offcl/Black-Hole.git
-cd Black-Hole
-
-:: Generate project files
-mkdir build && cd build
-cmake .. -G "Visual Studio 17 2022" -A x64
-
-:: Build Release
-cmake --build . --config Release
-
-:: Run tests
-cd tests\Release
-BlackHoleTests.exe
-```
-
-### Build Output
+## Project Structure
 
 ```
-build\bin\Release\
-├── BlackHole.exe                  # GUI application
-├── BlackHoleCLI.exe               # Command-line interface
-├── BlackHoleTests.exe             # 101 unit tests
-├── BlackHoleIntegrationTests.exe  # Integration tests
-└── file_holder.exe                # Test utilities
-
-build\lib\Release\
-└── BlackHoleCore.lib              # Static library
-```
-
----
-
-## 💻 Command Line Interface
-
-```cmd
-:: Delete a file
-BlackHoleCLI.exe --delete "C:\path\to\file.txt"
-
-:: Schedule for reboot deletion
-BlackHoleCLI.exe --reboot "C:\path\to\locked.dll"
-
-:: Check if file is blacklisted
-BlackHoleCLI.exe --check "C:\Windows\System32\ntoskrnl.exe"
-
-:: View pending reboot deletions
-BlackHoleCLI.exe --status
-
-:: Show help
-BlackHoleCLI.exe --help
-```
-
----
-
-## 🧪 Testing
-
-### Unit Tests — 101 Passing
-
-```
-╔══════════════════════════════════════════════════╗
-║  MODULE               ║  TESTS  ║  STATUS       ║
-╠══════════════════════════════════════════════════╣
-║  Blacklist            ║   26    ║  ✅ PASS       ║
-║  Privilege            ║    7    ║  ✅ PASS       ║
-║  Deletor              ║   12    ║  ✅ PASS       ║
-║  Logger               ║   12    ║  ✅ PASS       ║
-║  Protected Deletion   ║   11    ║  ✅ PASS       ║
-║  Uninstaller          ║   32    ║  ✅ PASS       ║
-╠══════════════════════════════════════════════════╣
-║  TOTAL                ║  101    ║  ✅ ALL PASS   ║
-╚══════════════════════════════════════════════════╝
-```
-
-### Test Coverage
-
-- **Blacklist:** Path normalization, override toggle, case sensitivity, drivers/defender blocking
-- **Privilege:** Backup/Restore privilege acquisition, admin detection, non-copyable
-- **Deletor:** Normal/delete/read-only/hidden/directory deletion, process protection, Restart Manager
-- **Logger:** File initialization, deletion/override/privilege/PPL logging, recent entries
-- **Protected Deletion:** ACL denial, nested dirs, symlinks, system+readonly combos
-- **Uninstaller:** Registry merge, dedup, scoring, PE extraction, sort queue, cross-hive
-
----
-
-## 🏗️ Tech Stack
-
-<div align="center">
-
-| | Technology |
-|---|---|
-| **Language** | ![C++](https://img.shields.io/badge/C++-17-00599C?style=flat&logo=cplusplus) |
-| **GUI** | ![Dear ImGui](https://img.shields.io/badge/Dear_ImGui-1.92.9-8e84ff?style=flat) |
-| **Graphics** | ![DirectX](https://img.shields.io/badge/DirectX_11-0078d4?style=flat&logo=microsoft) |
-| **Build** | ![CMake](https://img.shields.io/badge/CMake-3.15+-064f8c?style=flat&logo=cmake) |
-| **Compiler** | ![MSVC](https://img.shields.io/badge/MSVC-19.44-5c2d91?style=flat&logo=visualstudio) |
-| **APIs** | ![Win32](https://img.shields.io/badge/Win32_API-0078d4?style=flat&logo=windows) |
-
-</div>
-
----
-
-## 📁 Project Structure
-
-```
-Black Hole/
+Black-Hole/
 ├── src/
-│   ├── gui_imgui.cpp              # ImGui + DX11 GUI
-│   ├── main_cli.cpp               # CLI entry point
-│   ├── deletor.cpp                # 7-stage deletion engine
-│   ├── blacklist.cpp              # Blacklist + path canonicalization
-│   ├── privilege.cpp              # Privilege management
-│   ├── logger.cpp                 # Forensic audit logging
-│   ├── uninstaller.cpp            # Uninstaller + 21 scanners
-│   └── tests/
-│       ├── test_blacklist.cpp     # 26 blacklist tests
-│       ├── test_deletor.cpp       # 12 deletion tests
-│       ├── test_logger.cpp        # 12 logger tests
-│       ├── test_privilege.cpp     # 7 privilege tests
-│       ├── test_protected_deletion.cpp  # 11 protected deletion tests
-│       └── test_uninstaller.cpp   # 32 uninstaller tests
+│   ├── gui_imgui.cpp          # GUI (Dear ImGui + DX11)
+│   ├── tests/
+│   │   └── test_uninstaller.cpp  # Unit tests
+│   └── ...
 ├── include/
-│   ├── deletor.h
-│   ├── blacklist.h
-│   ├── privilege.h
-│   ├── logger.h
-│   └── uninstaller.h
-├── resources/
-│   └── BlackHole.manifest        # UAC requireAdministrator
-├── imgui/                         # Dear ImGui library
-├── CMakeLists.txt                 # Build configuration
+│   ├── blacklist.h            # Critical file protection
+│   ├── deletor.h              # File deletion engine
+│   ├── logger.h               # Audit logging
+│   ├── privilege.h            # UAC privilege escalation
+│   ├── uninstaller.h          # Program enumeration & leftover scanning
+│   └── embedded_font.h        # Roboto-Medium font (embedded)
+├── resources/                 # App icon, manifest
+├── tests/                     # Integration tests
+├── CMakeLists.txt
+├── LICENSE                    # GPL-3.0
 └── README.md
 ```
 
----
+## Tech Stack
 
-## 🔐 Security Features
+| Component | Technology |
+|-----------|-----------|
+| Language | C++17 (MSVC) |
+| GUI | Dear ImGui v1.92.9 WIP (DX11 backend) |
+| Build | CMake |
+| API | Raw Win32 API (no MFC/Qt dependency) |
+| Deletion | `MoveFileExW` reboot queue |
+| Fonts | Embedded Roboto-Medium (no external files) |
 
-| Feature | Description |
-|---------|-------------|
-| **Blacklist Protection** | 26+ critical system files protected from deletion |
-| **Path Canonicalization** | Resolves `\\?\` prefixes, ADS streams, relative paths |
-| **Handle-Based Deletion** | Atomic `SetFileInformationByHandle` prevents TOCTOU |
-| **Device Path Shield** | Blocks `\\.\PHYSICALDRIVE`, `CON`, `PRN`, `NUL` etc. |
-| **Override Phrase** | Case-sensitive `I assume full liability` required |
-| **Audit Logging** | Every deletion attempt logged with timestamp |
-| **Admin Only** | UAC manifest requires Administrator elevation |
+## How deletion works
 
----
+1. **Atomic handle delete** — opens the file with `DELETE_ON_CLOSE` and `FILE_FLAG_DELETE_ON_CLOSE`
+2. **Direct delete** — attempts `DeleteFileW` directly
+3. **Attribute stripping** — removes `FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM`
+4. **Process termination** — identifies and kills locking processes
+5. **Reboot queue** — calls `MoveFileExW` with `MOVEFILE_DELAY_UNTIL_REBOOT` for next-boot deletion
 
-## ⚠️ Limitations
+## Safety
 
-| Limitation | Workaround |
-|------------|------------|
-| PPL-protected files | Queued for reboot deletion |
-| Admin required | GUI/CLI both require Administrator |
-| Context menu install | Requires admin privileges |
-| Broken symlinks | Requires admin or developer mode |
+- **Blacklist** — 25+ critical Windows system files are permanently blocked from deletion
+- **Override resets** — bypass mode always resets on application restart
+- **Confirmation required** — override requires typing the exact phrase `"I assume full liability"`
+- **No persistence** — override state is never saved to disk or registry
 
----
+## License
 
-## 📄 License
+GPL-3.0 — see [LICENSE](LICENSE) for details.
 
-This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
-
-[![GPL v3](https://img.shields.io/badge/License-GPLv3-0078d4?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting a Pull Request.
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Run `cmake --build build --config Release` and verify tests pass
+5. Open a pull request
 
----
-
-## 📞 Support
-
-- **Issues:** [GitHub Issues](https://github.com/axs-offcl/Black-Hole/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/axs-offcl/Black-Hole/discussions)
-
----
-
-<div align="center">
-
-**Built with ❤️ for Windows power users**
-
-[![Follow](https://img.shields.io/badge/follow-@axs--offcl-8e84ff?style=for-the-badge)](https://github.com/axs-offcl)
-
-</div>
+All contributions must maintain the existing code conventions and pass the full test suite (119 tests).
