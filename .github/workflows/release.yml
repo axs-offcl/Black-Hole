@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-and-release:
     runs-on: windows-2022
 
     steps:
@@ -29,29 +29,13 @@ jobs:
         run: cmake --build build --config Release
 
       - name: Run Tests
-        run: build/tests/Release/BlackHoleTests.exe
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: BlackHole
-          path: build/bin/Release/BlackHole.exe
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: BlackHole
+        run: build\tests\Release\BlackHoleTests.exe
 
       - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: BlackHole/BlackHole.exe
+          files: build/bin/Release/BlackHole.exe
           generate_release_notes: true
           draft: false
           prerelease: false
