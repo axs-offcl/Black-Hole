@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-blue?style=for-the-badge" alt="Version">
-  <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4?style=for-the-badge&logo=windows" alt="Platform">
-  <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus" alt="C++17">
-  <img src="https://img.shields.io/badge/tests-119%20passing-brightgreen?style=for-the-badge" alt="Tests">
-  <img src="https://img.shields.io/badge/license-GPL%20v3-red?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/v2.0.0-0078d4?style=flat-square&label=version" alt="Version">
+  <img src="https://img.shields.io/badge/Windows_10%2F11-0078d4?style=flat-square&logo=windows&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++17">
+  <img src="https://img.shields.io/badge/119_tests-passing-4caf50?style=flat-square" alt="Tests">
+  <img src="https://img.shields.io/badge/GPL_v3-e53935?style=flat-square" alt="License">
 </p>
 
 <h1 align="center">Black Hole (B-H)</h1>
