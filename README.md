@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/v2.0.0-0078d4?style=flat-square&label=version" alt="Version">
-  <img src="https://img.shields.io/badge/Windows_10%2F11-0078d4?style=flat-square&logo=windows&logoColor=white" alt="Platform">
-  <img src="https://img.shields.io/badge/C++-17-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++17">
-  <img src="https://img.shields.io/badge/119_tests-passing-4caf50?style=flat-square" alt="Tests">
-  <img src="https://img.shields.io/badge/GPL_v3-e53935?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Black_Hole-v2.0-1a1a2e?style=flat&logo=windows&logoColor=white&labelColor=1a1a2e" alt="Black Hole v2.0">
+  <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=flat&logo=cplusplus&logoColor=white" alt="C++17">
+  <img src="https://img.shields.io/badge/DX11-Hardware_Accelerated-0678be?style=flat&logo=directx&logoColor=white" alt="DirectX 11">
+  <img src="https://img.shields.io/badge/Win32-API-No_Dependencies-e53935?style=flat" alt="Win32 API">
+  <img src="https://img.shields.io/badge/119-Tests_Pass-4caf50?style=flat" alt="Tests">
 </p>
 
 <h1 align="center">Black Hole (B-H)</h1>
