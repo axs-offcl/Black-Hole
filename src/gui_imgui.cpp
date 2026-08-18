@@ -5670,20 +5670,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                         float imTogX = sX + 140;
                         ImVec2 imTogEnd = drawToggle(imTogX, curY, g_installMonitorEnabled);
 
-                        int imSessionCount = (int)BlackHole::GetInstallMonitor().GetSessions().size();
                         const char* imStatusText = g_installMonitorEnabled ? "ACTIVE" : "INACTIVE";
                         ImU32 imStatusCol = g_installMonitorEnabled
                             ? IM_COL32(60, 220, 120, 255) : dimCol;
-
                         ImVec2 imStatusSz = ImGui::CalcTextSize(imStatusText);
                         cdl->AddText(ImVec2(imTogEnd.x + 12, curY + 2), imStatusCol, imStatusText);
 
-                        float imHelpX = imTogEnd.x + 12 + imStatusSz.x + 8;
+                        float imHelpX = imTogEnd.x + 12.0f + imStatusSz.x + 8.0f;
                         ImVec2 imHelpMin(imHelpX, curY + 2);
                         ImVec2 imHelpMax(imHelpX + 14, curY + 18);
                         bool imHelpHov = ImGui::IsMouseHoveringRect(imHelpMin, imHelpMax);
                         ImU32 imHelpCol = imHelpHov ? headerCol : dimCol;
-                        cdl->AddText(ImVec2(imTogEnd.x + 56, curY + 2), imHelpCol, "(?)");
+                        cdl->AddText(ImVec2(imHelpX, curY + 2), imHelpCol, "(?)");
                         if (imHelpHov) {
                             ImGui::BeginTooltip();
                             ImGui::PushTextWrapPos(350.0f);
