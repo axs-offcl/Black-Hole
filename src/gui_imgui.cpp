@@ -5669,12 +5669,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                         cdl->AddText(ImVec2(sX + 14, curY + 2), labelCol, "Install Monitor:");
                         float imTogX = sX + 140;
                         ImVec2 imTogEnd = drawToggle(imTogX, curY, g_installMonitorEnabled);
-                        cdl->AddText(ImVec2(imTogEnd.x + 12, curY + 2),
-                            g_installMonitorEnabled ? IM_COL32(60, 220, 120, 255) : dimCol,
-                            g_installMonitorEnabled ? "ON" : "OFF");
 
-                        ImVec2 imHelpMin(imTogEnd.x + 56, curY + 2);
-                        ImVec2 imHelpMax(imTogEnd.x + 70, curY + 18);
+                        int imSessionCount = (int)BlackHole::GetInstallMonitor().GetSessions().size();
+                        if (g_installMonitorEnabled) {
+                            char imStatus[64];
+                            snprintf(imStatus, sizeof(imStatus), "ACTIVE (%d session%s)",
+                                imSessionCount, imSessionCount == 1 ? "" : "s");
+                            cdl->AddText(ImVec2(imTogEnd.x + 12, curY + 2),
+                                IM_COL32(60, 220, 120, 255), imStatus);
+                        } else {
+                            cdl->AddText(ImVec2(imTogEnd.x + 12, curY + 2), dimCol, "INACTIVE");
+                        }
+
+                        ImVec2 imHelpMin(imTogEnd.x + 80, curY + 2);
+                        ImVec2 imHelpMax(imTogEnd.x + 94, curY + 18);
                         bool imHelpHov = ImGui::IsMouseHoveringRect(imHelpMin, imHelpMax);
                         ImU32 imHelpCol = imHelpHov ? headerCol : dimCol;
                         cdl->AddText(ImVec2(imTogEnd.x + 56, curY + 2), imHelpCol, "(?)");
