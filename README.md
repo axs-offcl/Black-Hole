@@ -36,11 +36,21 @@ It uses the Win32 `MoveFileExW` reboot-queue mechanism to schedule deletion at t
 
 ## Screenshots
 
-<!-- Add screenshots here after capturing -->
-<!-- ![Dashboard](screenshots/dashboard.png) -->
-<!-- ![Uninstaller](screenshots/uninstaller.png) -->
-<!-- ![Settings](screenshots/settings.png) -->
-<!-- ![Force Delete](screenshots/force_delete.png) -->
+<p align="center">
+  <img src="screenshots/1.png" alt="Dashboard" width="800">
+</p>
+
+<p align="center">
+  <img src="screenshots/2.png" alt="Force Delete" width="800">
+</p>
+
+<p align="center">
+  <img src="screenshots/3.png" alt="Logs" width="800">
+</p>
+
+<p align="center">
+  <img src="screenshots/4.png" alt="Settings" width="800">
+</p>
 
 ---
 
