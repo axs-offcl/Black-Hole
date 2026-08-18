@@ -99,6 +99,15 @@ It uses the Win32 `MoveFileExW` reboot-queue mechanism to schedule deletion at t
 
 ### Deep Scanners
 
+#### Real-Time Installation Monitor
+- **WMI-based detection** -- monitors for new installer processes (msiexec, setup.exe, InnoSetup, NSIS, WiX, etc.)
+- **Process tree tracking** -- follows parent-child process chains so tracking stays active until the entire install completes
+- **Restart Manager integration** -- registers tracked processes via `RmRegisterResources` for file/registry change detection
+- **Persistent JSON logs** -- saves session logs to `%LOCALAPPDATA%\BlackHole\InstallLogs\` so they survive restarts
+- **Notification toasts** -- alerts when an installer is detected
+- **Settings toggle** -- ON/OFF switch in Settings, persists across sessions
+- **Zero overhead when idle** -- 2-second polling interval, near-zero CPU when no installers detected
+
 #### Service Detail Scanner
 - Binary paths, dependency chains, start types, running state
 - Orphaned service detection (binary no longer exists)
@@ -328,6 +337,7 @@ BlackHole/
 │   ├── wmi_scanner.cpp            # WMI persistence scanner
 │   ├── report_exporter.cpp        # HTML/CSV/JSON export
 │   ├── scheduled_queue.cpp        # Pending reboot deletion queue
+│   ├── install_monitor.cpp        # Real-time installation monitor (WMI + RM)
 │   ├── context_menu.cpp           # Old context menu cleanup + registry ops
 │   ├── shell_ext.cpp              # COM shell extension DLL (IContextMenu)
 │   ├── scan_delete_popup.cpp      # Standalone scan-and-delete window
@@ -400,6 +410,7 @@ All settings are saved to `%APPDATA%\BlackHole\config.ini` (or next to the exe i
 | `WindowAlpha` | float | `1.0` | Window opacity (0.15-1.0) |
 | `ResizableWindow` | bool | `0` | Resizable window mode |
 | `DockExpanded` | bool | `1` | Dock panel expanded |
+| `InstallMonitor` | bool | `0` | Real-time installation monitor |
 
 ---
 
