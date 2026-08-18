@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Black_Hole-v2.0-1a1a2e?style=flat&logo=windows&logoColor=white&labelColor=1a1a2e" alt="Black Hole v2.0">
   <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?style=flat&logo=cplusplus&logoColor=white" alt="C++17">
   <img src="https://img.shields.io/badge/DX11-Hardware_Accelerated-0678be?style=flat&logo=directx&logoColor=white" alt="DirectX 11">
-  <img src="https://img.shields.io/badge/Win32-API-No_Dependencies-e53935?style=flat" alt="Win32 API">
+  <img src="https://img.shields.io/badge/Win32_API-No_Dependencies-e53935?style=flat" alt="Win32 API">
   <img src="https://img.shields.io/badge/119-Tests_Pass-4caf50?style=flat" alt="Tests">
 </p>
 
