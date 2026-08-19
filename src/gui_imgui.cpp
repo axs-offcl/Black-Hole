@@ -2030,6 +2030,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
     ShowWindow(g_hMainWindow, SW_SHOWDEFAULT);
     UpdateWindow(g_hMainWindow);
     DragAcceptFiles(g_hMainWindow, TRUE);
+
+    typedef BOOL (WINAPI *pChangeMsgFilter)(UINT, DWORD);
+    HMODULE hUser32 = GetModuleHandleW(L"user32.dll");
+    if (hUser32) {
+        auto pFunc = (pChangeMsgFilter)GetProcAddress(hUser32, "ChangeWindowMessageFilter");
+        if (pFunc) {
+            pFunc(WM_DROPFILES, 1);
+            pFunc(0x0049, 1);
+        }
+    }
+
     CreateToggleWindow(hInstance);
     UpdateTogglePosition();
 
