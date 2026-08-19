@@ -2620,27 +2620,40 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                         cdl->AddText(ImVec2(centerX - dtSize.x / 2, centerY + 20),
                             dropHover ? Vec4ToU32(CLR_TEXT) : Vec4ToU32(CLR_TEXT_DIM), dropText);
 
-                        const char* subText = "or click Select File below";
+                        const char* subText = "or click a button below";
                         ImVec2 stSize = ImGui::CalcTextSize(subText);
                         cdl->AddText(ImVec2(centerX - stSize.x / 2, centerY + 40),
                             Vec4ToU32(CLR_TEXT_DIM), subText);
 
                         // Buttons at bottom of drop zone
-                        float btnW = 130.0f, btnH = 34.0f;
+                        float btnW = 110.0f, btnH = 34.0f;
+                        float btnGap2 = 8.0f;
                         float btnY2 = treeY + dropH - btnH - 16.0f;
+                        float totalBtnW = btnW * 2 + btnGap2;
+                        float btnStartX = treeX + treeW / 2 - totalBtnW / 2;
 
-                        ImVec2 selMin2(treeX + treeW / 2 - btnW / 2, btnY2);
-                        ImVec2 selMax2(treeX + treeW / 2 + btnW / 2, btnY2 + btnH);
-                        bool selHov2 = ImGui::IsMouseHoveringRect(selMin2, selMax2);
-                        cdl->AddRectFilled(selMin2, selMax2, selHov2 ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 8.0f);
-                        cdl->AddRect(selMin2, selMax2, Vec4ToU32(CLR_STROKE), 8.0f, 0, 1.0f);
-                        const char* selLabel = "Select File";
-                        ImVec2 selLabelSize = ImGui::CalcTextSize(selLabel);
-                        cdl->AddText(ImVec2((selMin2.x + selMax2.x - selLabelSize.x) / 2, (selMin2.y + selMax2.y - selLabelSize.y) / 2),
-                            Vec4ToU32(CLR_TEXT), selLabel);
+                        ImVec2 sfMin2(btnStartX, btnY2);
+                        ImVec2 sfMax2(btnStartX + btnW, btnY2 + btnH);
+                        bool sfHov2 = ImGui::IsMouseHoveringRect(sfMin2, sfMax2);
+                        cdl->AddRectFilled(sfMin2, sfMax2, sfHov2 ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 8.0f);
+                        cdl->AddRect(sfMin2, sfMax2, Vec4ToU32(CLR_STROKE), 8.0f, 0, 1.0f);
+                        ImVec2 sfLabelSz = ImGui::CalcTextSize("Select File");
+                        cdl->AddText(ImVec2((sfMin2.x + sfMax2.x - sfLabelSz.x) / 2, (sfMin2.y + sfMax2.y - sfLabelSz.y) / 2),
+                            Vec4ToU32(CLR_TEXT), "Select File");
 
-                        if (io.MouseClicked[0] && selHov2)
+                        ImVec2 sf2Min(btnStartX + btnW + btnGap2, btnY2);
+                        ImVec2 sf2Max(btnStartX + btnW * 2 + btnGap2, btnY2 + btnH);
+                        bool sf2Hov = ImGui::IsMouseHoveringRect(sf2Min, sf2Max);
+                        cdl->AddRectFilled(sf2Min, sf2Max, sf2Hov ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 8.0f);
+                        cdl->AddRect(sf2Min, sf2Max, Vec4ToU32(CLR_STROKE), 8.0f, 0, 1.0f);
+                        ImVec2 sf2LabelSz = ImGui::CalcTextSize("Select Folder");
+                        cdl->AddText(ImVec2((sf2Min.x + sf2Max.x - sf2LabelSz.x) / 2, (sf2Min.y + sf2Max.y - sf2LabelSz.y) / 2),
+                            Vec4ToU32(CLR_TEXT), "Select Folder");
+
+                        if (io.MouseClicked[0] && sfHov2)
                             SelectFile(g_hMainWindow);
+                        if (io.MouseClicked[0] && sf2Hov)
+                            SelectFolder(g_hMainWindow);
 
                     } else {
                     // === FILE SELECTOR BAR (when file is selected) ===
