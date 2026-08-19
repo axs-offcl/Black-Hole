@@ -2694,8 +2694,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                     }
 
                     // === BUTTONS ===
-                    float btnW = 110.0f, btnH = 32.0f;
+                    float btnW = 90.0f, btnH = 32.0f;
                     float btnY = treeY + selBarH + 10.0f;
+                    float btnGap = 6.0f;
 
                     // Select File button
                     ImVec2 selMin(treeX, btnY);
@@ -2706,9 +2707,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                     ImVec2 selT = ImGui::CalcTextSize("Select File");
                     cdl->AddText(ImVec2((selMin.x + selMax.x - selT.x) / 2, (selMin.y + selMax.y - selT.y) / 2), Vec4ToU32(CLR_TEXT), "Select File");
 
+                    // Select Folder button
+                    ImVec2 sfMin(treeX + btnW + btnGap, btnY);
+                    ImVec2 sfMax(treeX + (btnW + btnGap) * 2, btnY + btnH);
+                    bool sfHov = ImGui::IsMouseHoveringRect(sfMin, sfMax);
+                    cdl->AddRectFilled(sfMin, sfMax, sfHov ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 6.0f);
+                    cdl->AddRect(sfMin, sfMax, Vec4ToU32(CLR_STROKE), 6.0f, 0, 1.0f);
+                    ImVec2 sfT = ImGui::CalcTextSize("Select Folder");
+                    cdl->AddText(ImVec2((sfMin.x + sfMax.x - sfT.x) / 2, (sfMin.y + sfMax.y - sfT.y) / 2), Vec4ToU32(CLR_TEXT), "Select Folder");
+
                     // Analyze button
-                    ImVec2 anaMin(treeX + btnW + 8, btnY);
-                    ImVec2 anaMax(treeX + btnW * 2 + 8, btnY + btnH);
+                    ImVec2 anaMin(treeX + (btnW + btnGap) * 2, btnY);
+                    ImVec2 anaMax(treeX + (btnW + btnGap) * 3, btnY + btnH);
                     bool canAnalyze = !g_selectedFile.empty() && !g_analysisRunning;
                     bool anaHov = canAnalyze && ImGui::IsMouseHoveringRect(anaMin, anaMax);
                     cdl->AddRectFilled(anaMin, anaMax, anaHov ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 6.0f);
@@ -2718,8 +2728,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                         canAnalyze ? Vec4ToU32(CLR_TEXT) : Vec4ToU32(CLR_TEXT_DIM), g_analysisRunning ? "Analyzing..." : "Analyze");
 
                     // Delete button
-                    ImVec2 delMin(treeX + btnW * 2 + 16, btnY);
-                    ImVec2 delMax(treeX + btnW * 3 + 16, btnY + btnH);
+                    ImVec2 delMin(treeX + (btnW + btnGap) * 3, btnY);
+                    ImVec2 delMax(treeX + (btnW + btnGap) * 4, btnY + btnH);
                     bool canDel = !g_selectedFile.empty() && g_impactAnalysis.analyzed;
                     bool delHov = canDel && ImGui::IsMouseHoveringRect(delMin, delMax);
                     cdl->AddRectFilled(delMin, delMax, delHov ? Vec4ToU32(CLR_ELEM_BG_HOVER) : Vec4ToU32(CLR_ELEM_BG), 6.0f);
@@ -2732,6 +2742,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int) {
                         ImVec2 m = io.MousePos;
                         if (m.x >= selMin.x && m.x <= selMax.x && m.y >= selMin.y && m.y <= selMax.y)
                             SelectFile(g_hMainWindow);
+                        if (m.x >= sfMin.x && m.x <= sfMax.x && m.y >= sfMin.y && m.y <= sfMax.y)
+                            SelectFolder(g_hMainWindow);
                         if (canAnalyze && m.x >= anaMin.x && m.x <= anaMax.x && m.y >= anaMin.y && m.y <= anaMax.y) {
                             g_analysisRunning = true;
                             g_impactAnalysis = {};

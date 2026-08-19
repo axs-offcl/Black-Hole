@@ -52,7 +52,39 @@ void SelectFile(HWND hwnd) {
         DWORD options;
         pDialog->GetOptions(&options);
         pDialog->SetOptions(options | FOS_FORCEFILESYSTEM);
-        pDialog->SetTitle(L"Select File or Folder to Analyze");
+        pDialog->SetTitle(L"Select File to Analyze");
+
+        IShellItem* pItem = nullptr;
+        hr = pDialog->Show(hwnd);
+        if (SUCCEEDED(hr)) {
+            pDialog->GetResult(&pItem);
+            if (pItem) {
+                PWSTR pszPath = nullptr;
+                pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
+                if (pszPath) {
+                    g_selectedFile = pszPath;
+                    CoTaskMemFree(pszPath);
+                }
+                pItem->Release();
+            }
+        }
+        pDialog->Release();
+    }
+
+    if (comInited) CoUninitialize();
+}
+
+void SelectFolder(HWND hwnd) {
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    bool comInited = SUCCEEDED(hr);
+
+    IFileOpenDialog* pDialog = nullptr;
+    hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_PPV_ARGS(&pDialog));
+    if (SUCCEEDED(hr)) {
+        DWORD options;
+        pDialog->GetOptions(&options);
+        pDialog->SetOptions(options | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+        pDialog->SetTitle(L"Select Folder to Analyze");
 
         IShellItem* pItem = nullptr;
         hr = pDialog->Show(hwnd);
